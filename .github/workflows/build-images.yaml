@@ -1,5 +1,5 @@
 
-name: Build backend
+name: Build container images
 
 on:
   workflow_dispatch:
@@ -41,4 +41,18 @@ jobs:
       with:
         context: ContainerAppsDemo.Backend
         tags: acritvinfotag.azurecr.io/containerappsdemo/backend:latest
+        push: true
+
+    - name: Build
+      uses: docker/build-push-action@v3
+      with:
+        context: ContainerAppsDemo.BackendForFrontend
+        tags: acritvinfotag.azurecr.io/containerappsdemo/bff:latest
+        push: true
+
+    - name: Build
+      uses: docker/build-push-action@v3
+      with:
+        context: ContainerAppsDemo.Frontend
+        tags: acritvinfotag.azurecr.io/containerappsdemo/frontend:latest
         push: true

@@ -10,14 +10,14 @@ var app = builder.Build();
 
 app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 app.UseHttpsRedirection();
-app.MapGet("/health", async (IHttpClientFactory factory) => {
+app.MapGet("/bff/health", async (IHttpClientFactory factory) => {
     var client = factory.CreateClient("backend");
-    var response = await client.GetAsync($"/health");
+    var response = await client.GetAsync($"/backend/health");
     response.EnsureSuccessStatusCode();
     return Results.Ok(new { IsHealthy = true });
 });
 
-app.MapGet("/calculate", async (int? a, int? b, IHttpClientFactory factory) =>
+app.MapGet("/bff/calculate", async (int? a, int? b, IHttpClientFactory factory) =>
 {
     if (a is null || b is null)
     {
@@ -31,7 +31,7 @@ app.MapGet("/calculate", async (int? a, int? b, IHttpClientFactory factory) =>
     }
 
     var client = factory.CreateClient("backend");
-    var response = await client.GetAsync($"/calculate?formula={a}%2b{b}");
+    var response = await client.GetAsync($"/backend/calculate?formula={a}%2b{b}");
     response.EnsureSuccessStatusCode();
     var result = await response.Content.ReadFromJsonAsync<BackendResult>();
 

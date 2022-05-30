@@ -4,10 +4,10 @@ using System.Text.RegularExpressions;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 app.UseHttpsRedirection();
-app.MapGet("/health", () => Results.Ok(new { IsHealthy = true, }));
+app.MapGet("/backend/health", () => Results.Ok(new { IsHealthy = true, }));
 
 var formulaRegex = new Regex("^[0-9]+([+-][0-9]+)*$", RegexOptions.Compiled);
-app.MapGet("/calculate", (string formula) =>
+app.MapGet("/backend/calculate", (string formula) =>
 {
     if (!formulaRegex.IsMatch(formula))
     {
