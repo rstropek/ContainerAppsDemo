@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "ContainerAppsDemo.Backend": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "calculate?formula=5%2b3-4",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7189;http://localhost:5189"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": false,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/calculate?formula=5%2b3-4",
+      "publishAllPorts": true,
+      "useSSL": true
+    }
+  }
+}

@@ -1,0 +1,11 @@
+services:
+  backend:
+    build: ContainerAppsDemo.Backend
+  bff:
+    build: ContainerAppsDemo.BackendForFrontend
+    links:
+      - backend
+    environment:
+      - BackendBaseUrl=http://backend
+    ports:
+      - 8081:80
