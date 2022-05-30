@@ -77,4 +77,5 @@ jobs:
         end=`date -u -d "30 minutes" '+%Y-%m-%dT%H:%MZ'`
         sas=`az storage container generate-sas --account-name ${{ env.StorageAccountName }} -n '$web' --https-only --permissions dlrw --expiry $end --only-show-errors -o tsv`
         az extension add --name storage-preview
-        az storage blob directory upload --account-name ${{ env.StorageAccountName }} -c '$web' -s . -d . --recursive --sas-token $sas --only-show-errors
+        az storage blob upload --account-name ${{ env.StorageAccountName }} -c '$web' -f index.html --sas-token $sas --only-show-errors --overwrite true
+        az storage blob upload --account-name ${{ env.StorageAccountName }} -c '$web' -f bundle.js --sas-token $sas --only-show-errors --overwrite true
