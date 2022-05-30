@@ -11,6 +11,10 @@ on:
 
 jobs:
   build:
+    env:
+      AcrName: acritvinfotag
+      StorageAccountName: itvinfotagweb
+
     permissions:
       id-token: write
 
@@ -18,7 +22,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
@@ -34,25 +38,43 @@ jobs:
 
     - name: Azure ACR Login
       run: |
-        az acr login --name acritvinfotag
+        az acr login --name ${{ env.AcrName }}
 
-    - name: Build
+    - name: Build and publish backend
       uses: docker/build-push-action@v3
       with:
         context: ContainerAppsDemo.Backend
-        tags: acritvinfotag.azurecr.io/containerappsdemo/backend:latest
+        tags: ${{ env.AcrName }}.azurecr.io/containerappsdemo/backend:latest
         push: true
 
-    - name: Build
+    - name: Build and publish bff
       uses: docker/build-push-action@v3
       with:
         context: ContainerAppsDemo.BackendForFrontend
-        tags: acritvinfotag.azurecr.io/containerappsdemo/bff:latest
+        tags: ${{ env.AcrName }}.azurecr.io/containerappsdemo/bff:latest
         push: true
 
-    - name: Build
+    - name: Build and publish frontend
       uses: docker/build-push-action@v3
       with:
         context: ContainerAppsDemo.Frontend
-        tags: acritvinfotag.azurecr.io/containerappsdemo/frontend:latest
+        tags: ${{ env.AcrName }}.azurecr.io/containerappsdemo/frontend:latest
         push: true
+    
+    - uses: actions/setup-node@v3
+      with:
+        node-version: lts/*
+    
+    - name: Build frontend
+      working-directory: ContainerAppsDemo.Frontend
+      run: |
+        npm install
+        npm run build
+
+    - name: Copy frontend
+      working-directory: ContainerAppsDemo.Frontend
+      run: |
+        end=`date -u -d "30 minutes" '+%Y-%m-%dT%H:%MZ'`
+        sas=`az storage container generate-sas --account-name ${{ env.StorageAccountName }} -n '$web' --https-only --permissions dlrw --expiry $end --only-show-errors -o tsv`
+        az extension add --name storage-preview
+        az storage blob directory upload --account-name ${{ env.StorageAccountName }} -c '$web' -s ./dist -d . --recursive --sas-token $sas --only-show-errors
